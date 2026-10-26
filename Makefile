@@ -10,6 +10,8 @@ EMAIL = agostino.russo@gmail.com
 all: build check
 
 build: wubi
+bash: 
+	bash
 
 wubi: wubi-pre-build
 	PYTHONPATH=src tools/pywine -OO src/pypack/pypack --verbose --bytecompile --outputdir=build/wubi src/main.py data build/bin build/version.py build/winboot build/translations
@@ -126,6 +128,9 @@ runbin: wubi
 	rm -rf build/test
 	mkdir build/test
 	cd build/test; ../../tools/wine ../wubi.exe --test
+
+test: wubi
+	wine build/wubi.exe
 
 check_wine: tools/check_wine
 	tools/check_wine
