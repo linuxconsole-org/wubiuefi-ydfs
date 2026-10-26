@@ -12,6 +12,14 @@ all: build check
 build: wubi
 bash: 
 	bash
+ydfs:
+	docker build -t "ydfs-wubi" .
+	docker run -ti --rm --security-opt seccomp=unconfined \
+	-v "$(PWD):$(PWD)" \
+	-w="$(PWD)" \
+	-v /tmp/.X11-unix:/tmp/.X11-unix \
+	--user="`id -u`:`id -g`" \
+	"ydfs-wubi"
 
 wubi: wubi-pre-build
 	PYTHONPATH=src tools/pywine -OO src/pypack/pypack --verbose --bytecompile --outputdir=build/wubi src/main.py data build/bin build/version.py build/winboot build/translations
@@ -130,8 +138,13 @@ runbin: wubi
 	mkdir build/test
 	cd build/test; ../../tools/wine ../wubi.exe --test
 
-test: wubi
-	wine build/wubi.exe
+linuxconsole: 
+	docker run -ti --rm --security-opt seccomp=unconfined \
+	-v "$(PWD):$(PWD)" \
+	-w="$(PWD)" \
+	-v /tmp/.X11-unix:/tmp/.X11-unix \
+	--user="`id -u`:`id -g`" \
+	"ydfs-wubi" bash # wine build/linuxconsole.exe
 
 check_wine: tools/check_wine
 	tools/check_wine
